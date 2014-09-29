@@ -38,15 +38,15 @@ task manipulation()
 		if(joy2Btn(5) == 1)
 		{
 			//make sure that the motors work correctly before testing
-			motor[motorLifterR] = 20;
-			motor[motorLifterL] = -20;
+			motor[motorLifterR] = 100;
+			motor[motorLifterL] = -100;
 		}
 		//rb lowers the slides
 		else if(joy2Btn(6) == 1)
 		{
 			//make sure that the motors work correctly before testing
-			motor[motorLifterR] = -20;
-			motor[motorLifterL] = 20;
+			motor[motorLifterR] = -100;
+			motor[motorLifterL] = 100;
 		}
 		//lt makes the spinner pull the balls in
 		else if(joy2Btn(7) == 1)
@@ -67,6 +67,13 @@ task manipulation()
 		{
 		servo[dropperL] = 0; //enter "open" position here
 		servo[dropperR] = 150; //enter "open" position here
+		}
+
+		//Y Button makes it flat
+		if(joy2Btn(4) == 1)
+		{
+		servo[dropperL] = 0; //enter "open" position here
+		servo[dropperR] = 100; //enter "open" position here
 		}
 
 		//A button makes sure that balls don't fall out
@@ -118,10 +125,10 @@ task mecanumDrive()
 		}
 
 		//set variables for the motors
-		short fl = y1 + x2 + x1;
-		short bl = y1 + x2 - x1;
-		short fr = y1 - x2 - x1;
-		short br = y1 - x2 + x1;
+		short fl = y1 - x2 - x1;
+		short bl = y1 - x2 + x1;
+		short fr = y1 + x2 + x1;
+		short br = y1 + x2 - x1;
 
 		//make sure that the values cannot exceed 100 on the motors, if it doesn't, set the values to their regular formula values
 		if(fl > 100){

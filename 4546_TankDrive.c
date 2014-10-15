@@ -1,9 +1,9 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTMotor)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
-#pragma config(Motor,  mtr_S1_C1_1,     motorBL,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     motorFL,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_1,     motorFR,       tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motorBR,       tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motorBL,       tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     motorBR,       tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     motorFL,       tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_2,     motorFR,       tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     motorFlipper,  tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     motorLift,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop)
@@ -78,6 +78,10 @@ task manipulation()
 	{
 		motor[motorFlipper] = -100;
 	}
+	else
+	{
+		motor[motorFlipper] = 0;
+	}
 }
 task main()
 {
@@ -86,7 +90,7 @@ task main()
   waitForStart();   // wait for start of tele-op phase
   startTask(tankDrive);
   startTask(manipulation);
-  while (true)
+  while(true)
   {
 	  wait1Msec(5);
   }

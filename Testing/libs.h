@@ -1,4 +1,3 @@
-//CONTRIBUTORS: FTC 6299 and FTC 4546
 #include "hitechnic-gyro.h";
 #include "hitechnic-irseeker-v2.h"
 
@@ -8,29 +7,18 @@ float valInRange(float val, float threshold = 1.0) {
 	return (abs(val) <= threshold) ? 0 : val;
 }
 
+int getPosition() {
+	if(getIR() >= 6) return 2;
+	if(getIR() >= 5) return 1;
+	else return 3;
+}
+
 bool isInRange(float heading, float targetHeading, float threshold = 1.0) {
 	return abs(heading - targetHeading) <= threshold;
 }
 
 int getEncoderAverage(int leftMotor, int rightMotor) {
 	return (leftMotor + rightMotor) / 2;
-}
-
-int getIR(){
-	return HTIRS2readACDir(irSensor);
-}
-
-int getPosition() {
-	int x = getIR();
-	if(x >= 6)
-	{
-		return 2;
-	}
-	if(x <= 5 && x > 0)
-	{
-		return 3;
-	}
-	return 1;
 }
 
 void setMotors(int left, int right) {
@@ -59,7 +47,6 @@ void moveTo(int power, int deg, float threshold = 2.0, long time = 5000, float c
 	clearTimer(T1);
 
 	if (power > 0) {
-		//this makes the robot go forward
 		while (time1[T1] < time && getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < deg) { //used to be BL
 			// Reads gyros rate of turn, mulitplies it by the time passed (20ms), and adds it to the current heading
 			heading += valInRange(HTGYROreadRot(SENSOR_GYRO), threshold) * (float)(20 / 1000.0);
@@ -83,7 +70,6 @@ void moveTo(int power, int deg, float threshold = 2.0, long time = 5000, float c
 	}
 
 	else {
-		//this makes the robot go backward
 		while (time1[T1] < time && getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) > deg) {
 			// Reads gyros rate of turn, mulitplies it by the time passed (20ms), and adds it to the current heading
 			heading += valInRange(HTGYROreadRot(SENSOR_GYRO), threshold) * (float)(20 / 1000.0);
@@ -132,7 +118,6 @@ void turn(int power, int deg, int time = 5000) {
 
 	clearTimer(T1);
 
-	//positive degree should turn to the right
 	if (deg > 0) {
 		while (time1[T1] < time && abs(heading) < abs(deg)) {
 			heading += HTGYROreadRot(SENSOR_GYRO) * (float)(20 / 1000.0);
@@ -140,10 +125,10 @@ void turn(int power, int deg, int time = 5000) {
 			wait1Msec(20);
 		}
 	}
-	//negative degree should turn to the left
+
 	if (deg < 0) {
 		while (time1[T1] < time && abs(heading) < abs(deg)) {
-			heading += HTGYROreadRot(SENSOR_GYRO) * (float)(20 / 1000.0);
+		heading += HTGYROreadRot(SENSOR_GYRO) * (float)(20 / 1000.0);
 			setMotors(-power, power);
 			wait1Msec(20);
 		}
@@ -189,7 +174,7 @@ void arcTurn(int power, int deg, int time = 2000) {
 		}
 	}
 
-	// Backward arcTurn
+	// Backward arcTurn (flips inequalities)
 	else {
 		if (deg > 0) {
 			while (time1[T1] < time && abs(heading) < abs(deg)) {
@@ -210,29 +195,16 @@ void arcTurn(int power, int deg, int time = 2000) {
 	stopMotors();
 }
 
-void moveOffRamp(int deg, int power, int time = 3000)
-{
-	nMotorEncoder[motorFL] = 0;
-	nMotorEncoder[motorFR] = 0;
-
-	wait1Msec(500);
-	clearTimer(T1);
-	while((getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < deg) && time1[T1] < time)
-	{
-		setMotors(power, power);
-	}
-	stopMotors();
+int getIR(){
+	return HTIRS2readACDir(irSensor);
 }
 
-void lifter(int deg, int time = 5000)
+void offRamp(int time = 3000)
 {
-	nMotorEncoder[motorLift] = 0;
-
-	wait1Msec(500);
-	clearTimer(T1);
-	while((nMotorEncoder[motorLift] < deg) && time1[T1] < time)
+	clearTimer(T1)
+	while(time1[T1] < time)
 	{
-		motor[motorLift] = 100;
+		setMotors(50, 50);
 	}
-	motor[motorLift] = 0;
+	stopMotors();
 }

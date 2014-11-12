@@ -16,18 +16,24 @@
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
 
+
 task tankDrive()
 {
 while(true)
-	{
-		getJoystickSettings(joystick);
-		short y1 = joystick.joy1_y1;
-		short y2 = joystick.joy1_y2;
-		//Moving is done forward and backward with one joystick
+{
+	getJoystickSettings(joystick);
+	short y1 = joystick.joy1_y1;
+	short y2 = joystick.joy1_y2;
+	//Moving is done forward and backward with one joystick
 		if(abs(joystick.joy1_y1) >= 15)
 		{
 			motor[motorFL] = y1 * .7;
 			motor[motorBL] = y1 * .7;
+		}
+		else
+		{
+			motor[motorFL] = 0;
+			motor[motorBL] = 0;
 		}
 		if(abs(joystick.joy1_y2) >= 15)
 		{
@@ -38,8 +44,6 @@ while(true)
 	 	{
 			motor[motorFR] = 0;
 			motor[motorBR] = 0;
-			motor[motorFL] = 0;
-			motor[motorBL] = 0;
 		}
 	}
 }
@@ -64,18 +68,46 @@ task manipulation()
 			motor[motorFlipper] = 0;
 		}
 		//LT
-		if(joy2Btn(7) == 1)
+		if(joy2Btn(8) == 1)
 		{
 			motor[motorLift] = 100;
 		}
 		//RT
-		else if(joy2Btn(8) == 1)
+		else if(joy2Btn(7) == 1)
 		{
 			motor[motorLift] = -100;
 		}
 		else
 		{
 			motor[motorLift] = 0;
+		}
+		//proposed new lift
+		/*
+		if(joy2Btn(8) == 1)
+		{
+			motor[motorLift] = 100;
+			servo[pivotServo] = 180;
+		}
+		//RT
+		else if(joy2Btn(7) == 1)
+		{
+			motor[motorLift] = -100;
+			servo[pivotServo] = 180; // possible 220 value, have to test
+		}
+		else
+		{
+			motor[motorLift] = 0;
+		}
+		*/
+		//Y - latch closed
+		if(joy2Btn(4) == 1)
+		{
+			servo[latchServo] = 64;
+		}
+		//B - latch open
+		else if (joy2Btn(3) == 1)
+		{
+			servo[latchServo] = 126;
 		}
 		//X
 		if(joy2Btn(1) == 1)
@@ -85,32 +117,26 @@ task manipulation()
 		//A
 		else if(joy2Btn(2) == 1)
 		{
-			servo[pivotServo] = 220;
+			servo[pivotServo] = 255;
 		}
 		//TOP ARROW
 		else if(joystick.joy2_TopHat == 0)
 		{
-			servo(pivotServo) = 200;
+			servo[pivotServo] = 180;
 		}
-		//B
-		if(joy2Btn(3) == 1){
-			servo[latchServo] = 126;
-		}
-		//Y
-		else if(joy2Btn(4) == 1){
-			servo[latchServo] = 63;
-		}
-		//B
+		//OPEN, B
 		if(joy1Btn(3) == 1)
 		{
-			servo[grabberRight] = 140;
-			servo[grabberLeft] = 120;
+			servo[grabberRight] = 140; //140
+			servo[grabberLeft] = 120; //120
+			wait1Msec(500);
 		}
-		//Y
+		//CLOSE, Y
 		else if(joy1Btn(4) == 1)
 		{
-			servo[grabberRight] = 255;
-			servo[grabberLeft] = 0;
+			servo[grabberRight] = 200; //255
+			servo[grabberLeft] = 55; //0
+			wait1Msec(500);
 		}
 	}
 }
@@ -120,5 +146,7 @@ task main()
   startTask(tankDrive);
   startTask(manipulation);
   while(true)
-  {}
+  {
+  	wait1Msec(5);
+  }
 }

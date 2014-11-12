@@ -20,17 +20,46 @@
 #include "JoystickDriver.c"
 
 // since the gearing of the motors is weird, one full wheel spin is now approx. 187 for the encoder value!
+
 task main()
 {
+	//PC = Parking Center
+	//still have to find the IR values
 	//userInput();
 	//waitForStart();
-	//test all of the methods separately
-	//methods to test
-	//move(int encoderValue, int power, int time = 5000)
-	//turn(int power, int deg, int time = 5000)
-	//lifter(int deg, int time = 5000)
-	moveOffRamp(999, 35, 5000);
-
-
-	//all pseudocode was moved to a separate txt file on desktop, it is named comments
+		/*
+		if(ir in front)
+		{
+			forward x inches
+			drop balls
+			turn 45 right
+			go little forward
+			turn 45 left
+			go forward and get pole
+		}
+		if(it in pos 2(diag))
+		{
+			turn x deg
+			forward x inches
+			turn x deg
+			forward x inches
+			drop balls
+			turn 45 right
+			go little forward
+			turn 45 left
+			go forward and get pole
+		}
+		if(it is in pos 3(perp))
+		{
+			turn x deg
+			forward x inches
+			turn x deg
+			forward x inches
+			drop balls
+			turn 45 right
+			go little forward
+			turn 45 left
+			go forward and get pole
+		}
+	*/
 }

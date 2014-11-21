@@ -23,11 +23,40 @@
 
 task main()
 {
-	//PC = Parking Center
-	//still have to find the IR values
+	//RG = Ramp Goal
 	//userInput();
-	//waitForStart();
+	waitForStart();
+
+
+	//arcturn param = power, deg, time
+	//moveto param = power, encoder, time
+
+
+	grabber(false);
+	wait1Msec(50);
+
 	adjustLift(500);
+
+	moveTo(-35, -9999, 2500); // moves forward to get off the ramp
+	wait1Msec(10);
+	moveTo(-20, -500, 1000); //moves forward slower to not let goal roll away
+	wait1Msec(10);
+	grabber(true); //grabs the goal
+	wait1Msec(50);
+	//the following works very similar to getting out of a parking zone with a car
+	//rotTurn(50, -150);
+	arcTurn(50, 15);//turns a little
+	moveTo(40, 500, 1000);// move forward a little
+	arcTurn(50, 20); //turns a little
+
+	rotTurn(50, 90);
+	rotTurn(50, 90);
+	//now it is moving backwards
+	moveTo(-35, -1000, 5000); //goes to parking
+	arcTurn(25, -35);
+	moveTo(-35, -500, 1000);
+	grabber(false);
+	wait1Msec(50);
 	moveTo(40, 1000, 2000);
 	//1 = front, 2 = diag, 3 = perp
 	if(getPositionPark() == 1)
@@ -52,4 +81,30 @@ task main()
 		rotTurn(50, 45);
 		moveTo(50, 500, 1000);
 	}
+
+	/*
+	moveTo(30, 3500);
+	arcTurn(50, 90);
+	arcTurn(50, 90);
+	grabber(false);
+	wait1Msec(50);
+	*/
+
+	/*
+	arcTurn(25, 180);
+	lifter(999, 3000);
+	grabber(false);
+	arcTurn(25, 180);
+	moveTo(-50, -1500);
+	grabber(true);
+	moveTo(50, 1500);
+	arcTurn(25, 180);
+	grabber(false);
+	arcTurn(25, 180);
+	moveTo(-50, -1500);
+	grabber(true);
+	moveTo(50, 1500);
+	arcTurn(25, 180);
+	grabber(false);
+	*/
 }

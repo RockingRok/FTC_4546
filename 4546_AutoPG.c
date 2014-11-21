@@ -25,35 +25,28 @@ task main()
 {
 	//PG = Parking Goal
 	//userInput();
-	//waitForStart();
+	waitForStart();
 	grabber(false);
-	moveTo(-50, -5000);
-	moveTo(-35, -500);
-	lifter(-10000);
-	grabber(true);
-	moveTo(25, 4500);
-	arcTurn(25, 90);
-	arcTurn(25, 90);
+	adjustLift(500);
+	moveTo(-20, -1000, 1000);
+	arcTurn(40, 10); //5-25 degrees, turns for us so we don't have to line it up
+	moveTo(-45, -730, 3000); // move backwards
+	arcTurn(40, -10); //move back to needed position
+	moveTo(-45, -3000, 5000);
+	moveTo(-20, -500, 1000); //moves forward slower to not let goal roll away
 
-	/*
-	moveTo(-25, -1600);
-	grabber(true);
-	moveTo(25, 1600);
-	arcTurn(25, 180);
-	lifter(999, 3000);
+	wait1Msec(10);
+	grabber(true); //grabs the goal
+	wait1Msec(10);
+
+	moveTo(45, 3000, 5000); // moves back to park
+	rotTurn(50, 90);
+	rotTurn(50, 90);
+	arcTurn(40, -10);
+	moveTo(45, 730, 3000);
+	arcTurn(40, 10);
+	moveTo(20, 500, 500);
+
 	grabber(false);
-	arcTurn(25, 180);
-	moveTo(-50, -1500);
-	grabber(true);
-	moveTo(50, 1500);
-	arcTurn(25, 180);
-	grabber(false);
-	arcTurn(25, 180);
-	moveTo(-50, -1500);
-	grabber(true);
-	moveTo(50, 1500);
-	arcTurn(25, 180);
-	grabber(false);
-	*/
 
 }

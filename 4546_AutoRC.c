@@ -27,51 +27,31 @@ task main()
 	//userInput();
 	//waitForStart();
 	adjustLift(500);
-	moveTo(-25, -1600);
-	arcTurn(25, -70);
-	moveTo(-25, -500);
+	moveTo(25, 2000, 1000);
+	arcTurn(50, -90);
+	moveTo(50, 1000, 1000);
 	//aka directly in front pos 1
-	if(getPosition() == 1)
+	if(getPositionRamp() == 1)
 	{
-		arcTurn(25, -45);
-		moveTo(-25, -2000);
-		arcTurn(25, 90);
-		moveTo(-25, -2000);
-		arcTurn(25, 135);
-		moveTo(-25, -500);
-		lifter(999, 3000);
-		arcTurn(25, 45);
-		moveTo(-25, -250);
-		arcTurn(25, -45);
-		moveTo(-75, -500);
+		arcTurn(50, -10);
+		moveTo(50, 730, 1000);
+		arcTurn(50, 10);
+		moveTo(60, 1000, 2000);
 	}
 	//if(irPosition is in pos 2 (diag))
-	if(getPosition() == 2)
+	if(getPositionRamp() == 2)
 	{
-		arcTurn(25, -45);
-		moveTo(-25, -2000);
-		arcTurn(25, 90);
-		moveTo(-25, -1000);
-		arcTurn(25, 90);
-		moveTo(-25, -500);
-		lifter(999, 3000);
-		arcTurn(25, 45);
-		moveTo(-25, -250);
-		arcTurn(25, -45);
-		moveTo(-75, -500);
+		arcTurn(50, -30);
+		moveTo(60, 1000, 2000);
 	}
 	//if(irPosition is in pos 3(perpendicular))
-	if(getPosition() == 3)
+	if(getPositionRamp() == 3)
 	{
-		arcTurn(25, -45);
-		moveTo(-25, -1000);
-		arcTurn(25, 135);
-		moveTo(-25, -500);
-		lifter(999, 3000);
-		arcTurn(25, 45);
-		moveTo(-25, -250);
-		arcTurn(25, -45);
-		moveTo(-75, -500);
+		arcTurn(50, -45);
+		moveTo(50, 730, 1000);
+		rotTurn(50, 90);
+		rotTurn(50, 45);
+		moveTo(60, 1000, 2000);
 	}
 
 	//all pseudocode was moved to a separate txt file on desktop, it is named comments

@@ -25,47 +25,37 @@ task main()
 {
 	//RG = Ramp Goal
 	//userInput();
-	//waitForStart();
-	//servo[grabberRight] = 200;
-	//servo[grabberLeft] = 55;
-	grabber(false);
-	wait1Msec(50);
-	//adjustLift(500);
-	moveTo(-25, -2000);
-	lifter(-6000);
-	moveTo(-20, -500);
-	liftDown(-6000);
-	/*
-	wait1Msec(10);
-	grabber(true);
-	wait1Msec(50);
-	//servo[grabberRight] = 140;
-	//servo[grabberLeft] = 120;
-	arcTurn(50, 15);
-	moveTo(40, 500);
-	arcTurn(50, 25);
-	moveTo(30, 3500);
-	arcTurn(50, 90);
-	arcTurn(50, 90);
-	grabber(false);
-	wait1Msec(50);
-	*/
+	waitForStart();
 
-	/*
-	arcTurn(25, 180);
-	lifter(999, 3000);
+
+	//arcturn param = power, deg, time
+	//moveto param = power, encoder, time
+
 	grabber(false);
-	arcTurn(25, 180);
-	moveTo(-50, -1500);
-	grabber(true);
-	moveTo(50, 1500);
-	arcTurn(25, 180);
+	wait1Msec(50);
+
+	adjustLift(500);
+
+	moveTo(-35, -9999, 2500); // moves forward to get off the ramp
+	wait1Msec(10);
+	moveTo(-20, -500, 1000); //moves forward slower to not let goal roll away
+	wait1Msec(10);
+	grabber(true); //grabs the goal
+	wait1Msec(50);
+
+	//the following works very similar to getting out of a parking zone with a car
+	//rotTurn(50, -150);
+
+	arcTurn(50, 15);//turns a little
+	moveTo(40, 500, 1000);// move forward a little
+	arcTurn(50, 20); //turns a little
+	rotTurn(50, 90);
+	rotTurn(50, 90);
+
+	//now it is moving backwards
+	moveTo(-35, -1000, 5000); //goes to parking
+	arcTurn(25, -35);
+	moveTo(-35, -500, 1000);
 	grabber(false);
-	arcTurn(25, 180);
-	moveTo(-50, -1500);
-	grabber(true);
-	moveTo(50, 1500);
-	arcTurn(25, 180);
-	grabber(false);
-*/
+	wait1Msec(50);
 }

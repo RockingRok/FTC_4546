@@ -21,5 +21,5 @@
 
 task main()
 {
-	moveTo(50, 3000);
+	rotTurn(50, 90);
 }

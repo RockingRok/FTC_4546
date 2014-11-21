@@ -23,11 +23,33 @@
 
 task main()
 {
-	//PC = Parking Center
-	//still have to find the IR values
+	//PG = Parking Goal
 	//userInput();
-	//waitForStart();
+	waitForStart();
+	grabber(false);
 	adjustLift(500);
+	moveTo(-20, -1000, 1000);
+	arcTurn(40, 10); //5-25 degrees, turns for us so we don't have to line it up
+	moveTo(-45, -730, 3000); // move backwards
+	arcTurn(40, -10); //move back to needed position
+	moveTo(-45, -3000, 5000);
+
+	wait1Msec(10);
+	grabber(true); //grabs the goal
+	wait1Msec(10);
+
+	moveTo(45, 3000, 5000); // moves back to park
+	rotTurn(50, 90);
+	rotTurn(50, 90);
+	arcTurn(40, -10);
+	moveTo(-45, -730, 3000);
+	arcTurn(40, 10);
+	moveTo(-20, -500, 500);
+
+	wait1Msec(10);
+	grabber(false);
+	wait1Msec(10);
+
 	moveTo(40, 1000, 2000);
 	//1 = front, 2 = diag, 3 = perp
 	if(getPositionPark() == 1)
@@ -52,4 +74,5 @@ task main()
 		rotTurn(50, 45);
 		moveTo(50, 500, 1000);
 	}
+
 }

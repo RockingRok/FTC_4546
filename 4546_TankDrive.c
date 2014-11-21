@@ -19,12 +19,12 @@
 
 task tankDrive()
 {
-while(true)
-{
-	getJoystickSettings(joystick);
-	short y1 = joystick.joy1_y1;
-	short y2 = joystick.joy1_y2;
-	//Moving is done forward and backward with one joystick
+	while(true)
+	{
+		getJoystickSettings(joystick);
+		short y1 = joystick.joy1_y1;
+		short y2 = joystick.joy1_y2;
+		//Moving is done forward and backward with one joystick
 		if(abs(joystick.joy1_y1) >= 15)
 		{
 			motor[motorFL] = y1 * .7;
@@ -45,6 +45,22 @@ while(true)
 			motor[motorFR] = 0;
 			motor[motorBR] = 0;
 		}
+		/*
+		//test wiggle
+		while(joy1Btn(5) == 1)
+		{
+			if(joy1Btn(5) == 1)
+			{
+				motor[motorFR] = motor[motorFL] = motor[motorBR] = motor[motorBL] = 60;
+				wait1Msec(20);
+				motor[motorFR] = motor[motorFL] = motor[motorBR] = motor[motorBL] = -60;
+			}
+			else
+			{
+				motor[motorFR] = motor[motorFL] = motor[motorBR] = motor[motorBL] = 0;
+			}
+		}
+		*/
 	}
 }
 

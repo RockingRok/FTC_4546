@@ -1,50 +1,32 @@
-/*
-THE LIBRARY
-Here is a list of the methods that should be used (the main methods)
-
-* getPositionPark() & getPositionRamp()
-*	moveTo(int power, int deg, long time = 5000, float threshold = 2.0, float cor = 2.0)
-*	arcTurn(int power, int deg, int time = 3000)
-*	rotTurn(int power, int deg, int time = 3000)
-*	rotTurnEnc(float power, float enc, float time = 3000)
-
-*/
-
 //CONTRIBUTORS: FTC 4546
 #include "hitechnic-gyro.h";
 #include "hitechnic-irseeker-v2.h"
 
-//gets the current IR value
-int getIR()
-{
-	return HTIRS2readACDir(irSensor);
-}
-
 //gets our "position" on the field through our IR sensors
 int getPositionRamp()
 {
-	int x = getIR();
-	if(x >= 6)
-	{
-		return 2;
-	}
-	if(x <= 5 && x > 0)
+	int irvalue = HTIRS2readACDir(irSensor);
+	if(irvalue == 5)
 	{
 		return 1;
+	}
+	if(irvalue > 5)
+	{
+		return 2;
 	}
 	return 3;
 }
 
 int getPositionPark()
 {
-	int x = getIR();
-	if(x <= 5 && x > 0)
-	{
-		return 2;
-	}
-	if(x >= 5)
+	int irvalue = HTIRS2readACDir(irSensor);
+	if(irvalue >= 5)
 	{
 		return 1;
+	}
+	if(irvalue <= 4 && irvalue > 0)
+	{
+		return 2;
 	}
 	return 3;
 }
@@ -73,193 +55,93 @@ void stopMotors()
 	motor[motorBR] = 0;
 }
 
-//heading as a global variable to avoid errors in between running methods
+//defining one global variable instead of two in turn and move
 float heading = 0;
 
-//if the value to add to the actual heading is good
-float valInRange(float val, float threshold = 1.0) {
-	return (abs(val) <= threshold) ? 0 : val;
-}
-//checks the threshhold to see if we need to adjust
-bool isInRange(float heading, float targetHeading, float threshold = 1.0) {
-	return abs(heading - targetHeading) <= threshold;
-}
-//moveTo methods, backward and forward
-void moveTo(int power, int deg, long time = 5000, float threshold = 2.0, float cor = 2.0)
+void move(int power, int enc, int time = 5000)
 {
-	//reset values
 	heading = 0;
-	nMotorEncoder[motorFL] = 0;
 	nMotorEncoder[motorFR] = 0;
-
-	//calibrate gyro
-	wait1Msec(500);
+	nMotorEncoder[motorFL] = 0;
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(500);
-
-	//clear timer
+	wait1Msec(50);
 	clearTimer(T1);
 
-	if (power > 0) {
-		while (time1[T1] < time && getEncoderAverage(-nMotorEncoder[motorFL], -nMotorEncoder[motorBL]) < deg) {
-			// Reads gyros rate of turn, multiplies it by the time passed (20ms), and adds it to the current heading
-			heading += valInRange(HTGYROreadRot(gyroSensor), threshold) * (float)(20 / 1000.0);
-
-			// Checks if the gyro is outside of the specified threshold
-			if (isInRange(heading, 0, threshold)) {
-				setMotors(power, power);
-			}
-
-			// If not, lower the speed of the required side of the robot to adjust back to 0
-			else {
-				if (heading > 0) {
-					setMotors(power / cor, power);
-				}
-				if (heading < 0) {
-					setMotors(power, power / cor);
-				}
-			}
-			wait1Msec(20);
-		}
-	}
-
-	else {
-		while (time1[T1] < time && getEncoderAverage(-nMotorEncoder[motorFL], -nMotorEncoder[motorFR]) > deg) {
-			// Reads gyros rate of turn, multiplies it by the time passed (20ms), and adds it to the current heading
-			heading += valInRange(HTGYROreadRot(gyroSensor), threshold) * (float)(20 / 1000.0);
-
-			// Checks if the gyro is outside of the specified threshold
-			if (isInRange(heading, 0, threshold)) {
-				setMotors(power, power);
-			}
-
-			// If not, lower the speed of the required side of the robot to adjust back to 0
-			else {
-				if (heading > 0) {
-					setMotors(power, (power / cor));
-				}
-				if (heading < 0) {
-					setMotors((power / cor), power);
-				}
-			}
-
-			wait1Msec(20);
-		}
-	}
-
-	stopMotors();
-}
-
-//arc turn involves only one side of the wheels
-void arcTurn(int power, int deg, int time = 3000) {
-
-	// 90 Degree Modifier
-	if (abs(deg) == 90) {
-		int modifier = deg * 14/9;
-		deg = modifier;
-	}
-
-	// 45 Degree Modifier
-	else if (abs(deg) == 45) {
-		int modifier = deg * 13/9;
-		deg = modifier;
-	}
-	//reset variable and calibrate gyro
-	heading = 0;
-	wait1Msec(500);
-	HTGYROstartCal(gyroSensor);
-	wait1Msec(500);
-	clearTimer(T1);
-	//turning occurs here
+	//in case of our robot, going forward returns negative encoder values and backward is positive
 	if(power > 0)
 	{
-		if (deg > 0) {
-			while (time1[T1] < time && abs(heading) < abs(deg)) {
-				heading += HTGYROreadRot(gyroSensor) * (float)(20 / 1000.0);
-				setMotors(power, 0);
-				wait1Msec(20);
+		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) > -enc && time1[T1] < time)
+		{
+			heading += HTGYROreadRot(gyroSensor) * (10/1000);
+			if(heading > 1)
+			{
+				setMotors(power/2, power);
 			}
-		}
-		else {
-			while (time1[T1] < time && abs(heading) < abs(deg)) {
-				heading += HTGYROreadRot(gyroSensor) * (float)(20 / 1000.0);
-				setMotors(0, power);
-				wait1Msec(20);
+			else if(heading < -1)
+			{
+				setMotors(power, power/2);
 			}
+			else
+			{
+				setMotors(power, power);
+			}
+			wait1Msec(10);
 		}
+		stopMotors();
 	}
-	stopMotors();
+
+	if(power < 0)
+	{
+		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < enc && time1[T1] < time)
+		{
+			heading += HTGYROreadRot(gyroSensor) * (10/1000);
+			if(heading > 1)
+			{
+				setMotors(power/2, power);
+			}
+			else if(heading < -1)
+			{
+				setMotors(power, power/2);
+			}
+			else
+			{
+				setMotors(power, power);
+			}
+			wait1Msec(10);
+		}
+		stopMotors();
+	}
 }
-
-void rotTurn(int power, int deg, int time = 3000) {
-
-	// 90 Degree Modifier
-	if (abs(deg) == 90) {
-		int modifier = deg * 14/9;
-		deg = modifier;
-	}
-
-	// 45 Degree Modifier
-	else if (abs(deg) == 45) {
-		int modifier = deg * 13/9;
-		deg = modifier;
-	}
-
+void rotTurn(int power, int deg, int time = 5000)
+{
 	heading = 0;
-	wait1Msec(500);
+	deg = deg * 8/9;
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(500);
+	wait1Msec(50);
 	clearTimer(T1);
 	//rotational turn
 	if(power > 0)
 	{
-		if (deg > 0) {
-			while (time1[T1] < time && abs(heading) < abs(deg)) {
-				heading += HTGYROreadRot(gyroSensor) * (float)(20 / 1000.0);
+		if(deg > 0)
+		{
+			while(heading < deg && time1[T1] < time)
+			{
+				heading += HTGYROreadRot(gyroSensor) * (10 / 1000);
 				setMotors(power, -power);
-				wait1Msec(20);
+				wait1Msec(10);
 			}
 		}
-		else {
-			while (time1[T1] < time && abs(heading) < abs(deg)) {
-				heading += HTGYROreadRot(gyroSensor) * (float)(20 / 1000.0);
+		else
+		{
+			while(heading > deg && time1[T1] < time)
+			{
+				heading += HTGYROreadRot(gyroSensor) * (10 / 1000);
 				setMotors(-power, power);
-				wait1Msec(20);
+				wait1Msec(10);
 			}
 		}
 	}
 	stopMotors();
-}
-
-//plan b for gyro rotation if our other one fails
-void rotTurnEnc(float power, float enc, float time = 3000)
-{
-	nMotorEncoder[motorFL] = 0;
-	nMotorEncoder[motorFR] = 0;
-	wait1Msec(10);
-	clearTimer(T1);
-	if(power > 0)
-	{
-		//positive enc = turn right
-		if(enc > 0)
-		{
-			while(time1[T1] < time && (-nMotorEncoder[motorFL] < enc || -nMotorEncoder[motorFR] > -enc))
-			{
-				setMotors(power, -power);
-			}
-			setMotors(0,0);
-		}
-		//negative enc = turn left
-		if(enc < 0)
-		{
-			while(time1[T1] < time && (-nMotorEncoder[motorFL] > -enc || -nMotorEncoder[motorFR] < enc))
-			{
-				setMotors(-power, power);
-			}
-			setMotors(0,0);
-		}
-	}
-	setMotors(0,0);
 }
 
 void liftUp(int deg, int time = 5000)
@@ -296,17 +178,47 @@ void liftDown(int deg, int time = 5000)
 	motor[motorLift] = 0;
 }
 
+void autonomousLift(int deg, int time = 5000)
+{
+	nMotorEncoder[motorLift] = 0;
+	wait1Msec(50);
+	clearTimer(T1);
+	servo[pivotServo] = 180;
+	servo[latchServo] = 64;
+	servo[wireLifter] = 55;
+	while((nMotorEncoder[motorLift] > -deg) && time1[T1] < time)
+	{
+		motor[motorLift] = -100;
+	}
+	motor[motorLift] = 0;
+	servo[pivotServo] = 10;
+	wait1Msec(3000);
+	servo[latchServo] = 126;
+	wait1Msec(2000);
+	servo[pivotServo] = 180;
+	servo[latchServo] = 64;
+	wait1Msec(1000);
+	nMotorEncoder[motorLift] = 0;
+	wait1Msec(50);
+	clearTimer(T1);
+	while((nMotorEncoder[motorLift] < deg/1.5) && time1[T1] < time)
+	{
+		motor[motorLift] = 100;
+	}
+}
 void grabber(bool grab)
 {
 	if(grab)
 	{
-			servo[grabberRight] = 200;
-			servo[grabberLeft] = 55;
+		servo[grabberRight] = 200;
+		servo[grabberLeft] = 55;
+		wait1Msec(50);
 	}
 	else
 	{
-			servo[grabberRight] = 140;
-			servo[grabberLeft] = 120;
+		servo[grabberRight] = 140;
+		servo[grabberLeft] = 120;
+		wait1Msec(50);
 	}
 }
 
@@ -320,12 +232,4 @@ void adjustLift(int time)
 		motor[motorLift] = -75;
 	}
 	motor[motorLift] = 0;
-}
-
-void moveIR(int ir, int power)
-{
-	while(!(getIR() == ir))
-	{
-		setMotors(power, power);
-	}
 }

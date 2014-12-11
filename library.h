@@ -92,16 +92,16 @@ void move(int power, int enc, int time = 5000)
 
 	if(power < 0)
 	{
-		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < enc && time1[T1] < time)
+		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < -enc && time1[T1] < time)
 		{
 			heading += HTGYROreadRot(gyroSensor) * (10/1000);
 			if(heading > 1)
 			{
-				setMotors(power/2, power);
+				setMotors(power, power/2);
 			}
 			else if(heading < -1)
 			{
-				setMotors(power, power/2);
+				setMotors(power/2, power);
 			}
 			else
 			{

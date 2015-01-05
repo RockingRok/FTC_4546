@@ -15,6 +15,9 @@
 #pragma config(Servo,  srvo_S4_C1_5,    pivotServo,           tServoStandard)
 #pragma config(Servo,  srvo_S4_C1_6,    latchServo,           tServoStandard)
 #include "JoystickDriver.c"
+#include "library.h"
+float gyro = 0.0;
+float liftAvg = 0.0;
 task tankDrive()
 {
 	while(true)
@@ -35,17 +38,18 @@ task tankDrive()
 		if(abs(joystick.joy1_y2) >= 15)
 		{
 			motor[motorFR] = y2 * .7;
-	  	motor[motorBR] = y2 * .7;
+			motor[motorBR] = y2 * .7;
 		}
-	 	else
-	 	{
+		else
+		{
 			motor[motorFR] = 0;
 			motor[motorBR] = 0;
 		}
-
-		//HALF SPEED MODE
 		while(joy1Btn(5) == 1)
 		{
+			getJoystickSettings(joystick);
+			short y1 = joystick.joy1_y1;
+			short y2 = joystick.joy1_y2;
 			if(abs(joystick.joy1_y1) >= 15)
 			{
 				motor[motorFL] = (y1 * .7)/2;
@@ -59,16 +63,39 @@ task tankDrive()
 			if(abs(joystick.joy1_y2) >= 15)
 			{
 				motor[motorFR] = (y2 * .7)/2;
-		  	motor[motorBR] = (y2 * .7)/2;
+				motor[motorBR] = (y2 * .7)/2;
 			}
-		 	else
-		 	{
+			else
+			{
 				motor[motorFR] = 0;
 				motor[motorBR] = 0;
 			}
 		}
-		//
-
+		if(joy1Btn(2) == 1)
+		{
+			gyro = 0;
+			stopMotors();
+			wait1Msec(50);
+			HTGYROstartCal(gyroSensor);
+			while(joy1Btn(2) == 1)
+			{
+				gyro += HTGYROreadRot(gyroSensor) * (10/1000.0);
+				if(gyro > 1)
+				{
+					setMotors(50, 100);
+				}
+				else if(gyro < -1)
+				{
+					setMotors(100, 50);
+				}
+				else
+				{
+					setMotors(100, 100);
+				}
+				wait1Msec(10);
+			}
+			stopMotors();
+		}
 	}
 }
 
@@ -100,36 +127,77 @@ task manipulation()
 		if(joy2Btn(8) == 1)
 		{
 			motor[motorLift] = 100;
+			//motor[motorLift2] = 100;
 		}
 		//RT
 		else if(joy2Btn(7) == 1)
 		{
 			motor[motorLift] = -100;
+			//motor[motorLift2] = -100;
 		}
-
-		//for precise buckets
-		else if(joystick.joy2_TopHat == 6)
+		/*
+		//top right arrow, top goal
+		else if(joystick.joy2_TopHat == 1)
 		{
-			nMotorEncoderTarget[motorLift] = -7000;
-			while(joystick.joy2_TopHat == 6 && nMotorRunState[motorB] != runStateIdle)
+			servo[pivotServo] = 180;
+			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2
+			if(!(liftAvg == -10000))
 			{
-				motor[motorLift] = -100;
+				if(liftAvg > -10000)
+				{
+					motor[motorLift] = 100;
+					motor[motorLift2] = 100;
+				}
+				if(liftAvg < -10000)
+				{
+					motor[motorLift] = -100;
+					motor[motorLift2] = -100;
+				}
 			}
-			motor[motorLift] = 0;
 		}
+		//right arrow, middle goal
 		else if(joystick.joy2_TopHat == 2)
 		{
-			nMotorEncoderTarget[motorLift] = -12000;
-			while(joystick.joy2_TopHat == 2 && nMotorRunState[motorB] != runStateIdle)
+			servo[pivotServo] = 180;
+			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2
+			if(!(liftAvg == -7000))
 			{
-				motor[motorLift] = -100;
+				if(liftAvg > -7000)
+				{
+					motor[motorLift] = 100;
+					motor[motorLift2] = 100;
+				}
+				if(liftAvg < -7000)
+				{
+					motor[motorLift] = -100;
+					motor[motorLift2] = -100;
+				}
 			}
-			motor[motorLift] = 0;
 		}
-
+		//bottom right arrow, short goal
+		else if(joystick.joy2_TopHat == 3)
+		{
+			servo[pivotServo] = 180;
+			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2
+			if(!(liftAvg == -3400))
+			{
+				if(liftAvg > -3400)
+				{
+					motor[motorLift] = 100;
+					motor[motorLift2] = 100;
+				}
+				if(liftAvg < -3400)
+				{
+					motor[motorLift] = -100;
+					motor[motorLift2] = -100;
+				}
+			}
+		}
+		*/
 		else
 		{
 			motor[motorLift] = 0;
+			//motor[motorLift2] = 0;
 		}
 		//Y - latch closed
 		if(joy2Btn(4) == 1)
@@ -174,14 +242,15 @@ task manipulation()
 }
 task main()
 {
-  waitForStart();   // wait for start of tele-op phase
-  servo[wireLifter] = 55;
-  nMotorEncoder[motorLift] = 0;
-  wait1Msec(5);
-  startTask(tankDrive);
-  startTask(manipulation);
-  while(true)
-  {
-  	wait1Msec(5);
-  }
+	waitForStart();   // wait for start of tele-op phase
+	servo[wireLifter] = 55;
+	nMotorEncoder[motorLift] = 0;
+	//nMotorEncoder[motorLift2] = 0;
+	wait1Msec(5);
+	startTask(tankDrive);
+	startTask(manipulation);
+	while(true)
+	{
+		wait1Msec(5);
+	}
 }

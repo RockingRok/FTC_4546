@@ -58,13 +58,14 @@ void stopMotors()
 //defining one global variable instead of two in turn and move
 float heading = 0;
 
-void move(int power, int enc, int time = 5000)
+void move(int power, int enc, int time = 5000, float threshold = 1.0)
 {
 	heading = 0;
 	nMotorEncoder[motorFR] = 0;
 	nMotorEncoder[motorFL] = 0;
+	wait1Msec(150);
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(50);
+	wait1Msec(150);
 	clearTimer(T1);
 
 	//in case of our robot, going forward returns negative encoder values and backward is positive
@@ -72,12 +73,12 @@ void move(int power, int enc, int time = 5000)
 	{
 		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) > -enc && time1[T1] < time)
 		{
-			heading += HTGYROreadRot(gyroSensor) * (10/1000);
-			if(heading > 1)
+			heading += HTGYROreadRot(gyroSensor) * (10/1000.0);
+			if(heading > threshold)
 			{
 				setMotors(power/2, power);
 			}
-			else if(heading < -1)
+			else if(heading < -threshold)
 			{
 				setMotors(power, power/2);
 			}
@@ -94,12 +95,12 @@ void move(int power, int enc, int time = 5000)
 	{
 		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < -enc && time1[T1] < time)
 		{
-			heading += HTGYROreadRot(gyroSensor) * (10/1000);
-			if(heading > 1)
+			heading += HTGYROreadRot(gyroSensor) * (10/1000.0);
+			if(heading > threshold)
 			{
 				setMotors(power, power/2);
 			}
-			else if(heading < -1)
+			else if(heading < -threshold)
 			{
 				setMotors(power/2, power);
 			}
@@ -116,26 +117,26 @@ void rotTurn(int power, int deg, int time = 5000)
 {
 	heading = 0;
 	deg = deg * 8/9;
+	wait1Msec(150);
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(50);
+	wait1Msec(150);
 	clearTimer(T1);
-	//rotational turn
 	if(power > 0)
 	{
 		if(deg > 0)
 		{
 			while(heading < deg && time1[T1] < time)
 			{
-				heading += HTGYROreadRot(gyroSensor) * (10 / 1000);
+				heading += HTGYROreadRot(gyroSensor) * (10/1000.0);
 				setMotors(power, -power);
 				wait1Msec(10);
 			}
 		}
-		else
+		else if (deg < 0)
 		{
 			while(heading > deg && time1[T1] < time)
 			{
-				heading += HTGYROreadRot(gyroSensor) * (10 / 1000);
+				heading += HTGYROreadRot(gyroSensor) * (10/1000.0);
 				setMotors(-power, power);
 				wait1Msec(10);
 			}
@@ -143,7 +144,7 @@ void rotTurn(int power, int deg, int time = 5000)
 	}
 	stopMotors();
 }
-
+/*
 void liftUp(int deg, int time = 5000)
 {
 	nMotorEncoder[motorLift] = 0;
@@ -177,20 +178,23 @@ void liftDown(int deg, int time = 5000)
 	}
 	motor[motorLift] = 0;
 }
-
-void autonomousLift(int deg, int time = 5000)
+*/
+void autonomousLift(float deg, int time = 7000)
 {
 	nMotorEncoder[motorLift] = 0;
-	wait1Msec(50);
-	clearTimer(T1);
+	nMotorEncoder[motorLift2] = 0;
 	servo[pivotServo] = 180;
 	servo[latchServo] = 64;
 	servo[wireLifter] = 55;
-	while((nMotorEncoder[motorLift] > -deg) && time1[T1] < time)
+	wait1Msec(50);
+	clearTimer(T1);
+	while(((nMotorEncoder[motorLift] + nMotorEncoder[motorLift2])/2.0 > -deg) && time1[T1] < time)
 	{
 		motor[motorLift] = -100;
+		motor[motorLift2] = -100;
 	}
 	motor[motorLift] = 0;
+	motor[motorLift2] = 0;
 	servo[pivotServo] = 10;
 	wait1Msec(3000);
 	servo[latchServo] = 126;
@@ -199,11 +203,13 @@ void autonomousLift(int deg, int time = 5000)
 	servo[latchServo] = 64;
 	wait1Msec(1000);
 	nMotorEncoder[motorLift] = 0;
+	nMotorEncoder[motorLift2] = 0;
 	wait1Msec(50);
 	clearTimer(T1);
-	while((nMotorEncoder[motorLift] < deg/1.5) && time1[T1] < time)
+	while(((nMotorEncoder[motorLift] + nMotorEncoder[motorLift2])/2.0 < deg/1.5) && time1[T1] < time)
 	{
 		motor[motorLift] = 100;
+		motor[motorLift2] = 100;
 	}
 }
 void grabber(bool grab)
@@ -230,6 +236,8 @@ void adjustLift(int time)
 	while(time1[T1] < time)
 	{
 		motor[motorLift] = -75;
+		motor[motorLift2] = -75;
 	}
 	motor[motorLift] = 0;
+	motor[motorLift2] = 0;
 }

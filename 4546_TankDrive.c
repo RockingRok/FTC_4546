@@ -10,7 +10,7 @@
 #pragma config(Motor,  mtr_S1_C2_2,     motorFR,       tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C3_1,     motorLift,     tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C3_2,     motorFlipper,  tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motorLift2,    tmotorTetrix, openLoop, reversed, encoder)
+#pragma config(Motor,  mtr_S1_C4_1,     motorLift2,    tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C4_2,     motorK,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S4_C1_1,    servo1,               tServoNone)
 #pragma config(Servo,  srvo_S4_C1_2,    grabberLeft,          tServoStandard)
@@ -23,7 +23,6 @@
 #include "JoystickDriver.c"
 #include "library.h"
 float gyro = 0.0;
-float liftAvg = 0.0;
 task tankDrive()
 {
 	while(true)
@@ -123,7 +122,7 @@ task manipulation()
 		//BOTTOM ARROW, HALF SPEED FLIPPERS
 		else if(joystick.joy2_TopHat == 4)
 		{
-			servo[motorFlipper] = 50;
+			servo[motorFlipper] = -50;
 		}
 		else
 		{
@@ -141,19 +140,14 @@ task manipulation()
 			motor[motorLift] = -100;
 			motor[motorLift2] = -100;
 		}
+		/*
 		//top right arrow, top goal
 		else if(joystick.joy2_TopHat == 1)
 		{
 			servo[pivotServo] = 180;
-			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2.0;
-			if(!(liftAvg == -10600))
+			if(!(nMotorEncoder[motorLift] == -10000))
 			{
-				if(liftAvg < -10600)
-				{
-					motor[motorLift] = 100;
-					motor[motorLift2] = 100;
-				}
-				if(liftAvg > -10600)
+				if(nMotorEncoder[motorLift] < -10000)
 				{
 					motor[motorLift] = -100;
 					motor[motorLift2] = -100;
@@ -164,15 +158,9 @@ task manipulation()
 		else if(joystick.joy2_TopHat == 2)
 		{
 			servo[pivotServo] = 180;
-			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2.0;
-			if(!(liftAvg == -7000))
+			if(!(nMotorEncoder[motorLift] == -7000))
 			{
-				if(liftAvg < -7000)
-				{
-					motor[motorLift] = 100;
-					motor[motorLift2] = 100;
-				}
-				if(liftAvg > -7000)
+				if(nMotorEncoder[motorLift] < -7000)
 				{
 					motor[motorLift] = -100;
 					motor[motorLift2] = -100;
@@ -183,21 +171,16 @@ task manipulation()
 		else if(joystick.joy2_TopHat == 3)
 		{
 			servo[pivotServo] = 180;
-			liftAvg = (nMotorEncoder[motorLift] + nMotorEncoder[motorLift2]) / 2.0;
-			if(!(liftAvg == -3400))
+			if(!(nMotorEncoder[motorLift] == -3400))
 			{
-				if(liftAvg < -3400)
-				{
-					motor[motorLift] = 100;
-					motor[motorLift2] = 100;
-				}
-				if(liftAvg > -3400)
+				if(nMotorEncoder[motorLift] < -3400)
 				{
 					motor[motorLift] = -100;
 					motor[motorLift2] = -100;
 				}
 			}
 		}
+		*/
 		else
 		{
 			motor[motorLift] = 0;
@@ -216,7 +199,7 @@ task manipulation()
 		//X
 		if(joy2Btn(1) == 1)
 		{
-			servo[pivotServo] = 0;
+			servo[pivotServo] = 44;
 		}
 		//A
 		else if(joy2Btn(2) == 1)
@@ -249,7 +232,6 @@ task main()
 	waitForStart();   // wait for start of tele-op phase
 	servo[wireLifter] = 55;
 	nMotorEncoder[motorLift] = 0;
-	nMotorEncoder[motorLift2] = 0;
 	wait1Msec(5);
 	startTask(tankDrive);
 	startTask(manipulation);

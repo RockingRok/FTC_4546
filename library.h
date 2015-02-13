@@ -4,7 +4,7 @@
 
 //defining one global variable instead of two in turn and move
 float heading = 0;
-
+/*
 //gets our "position" on the field through our IR sensors
 int getPositionRamp()
 {
@@ -19,7 +19,7 @@ int getPositionRamp()
 	}
 	return 3;
 }
-
+*/
 int getPositionPark()
 {
 	int irvalue = HTIRS2readACDir(irSensor);
@@ -61,10 +61,10 @@ void stopMotors()
 void rotTurn(int power, float deg, int time = 5000)
 {
 	heading = 0;
-	deg = deg * 8.55/9.0;
-	wait1Msec(150);
+	deg = deg * .86667;
+	wait1Msec(200);
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(150);
+	wait1Msec(200);
 	clearTimer(T1);
 	if(power > 0)
 	{
@@ -95,15 +95,15 @@ void move(int power, int enc, int time = 5000, float threshold = 1.0)
 	heading = 0;
 	nMotorEncoder[motorFR] = 0;
 	nMotorEncoder[motorFL] = 0;
-	wait1Msec(150);
+	wait1Msec(200);
 	HTGYROstartCal(gyroSensor);
-	wait1Msec(150);
+	wait1Msec(200);
 	clearTimer(T1);
 
 	//in case of our robot, going forward returns negative encoder values and backward is positive
 	if(power > 0)
 	{
-		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) > -enc && time1[T1] < time)
+		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < enc && time1[T1] < time)
 		{
 			heading += HTGYROreadRot(gyroSensor) * (10.0/1000.0);
 			if(heading > threshold)
@@ -125,7 +125,7 @@ void move(int power, int enc, int time = 5000, float threshold = 1.0)
 
 	if(power < 0)
 	{
-		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) < -enc && time1[T1] < time)
+		while(getEncoderAverage(nMotorEncoder[motorFL], nMotorEncoder[motorFR]) > enc && time1[T1] < time)
 		{
 			heading += HTGYROreadRot(gyroSensor) * (10.0/1000.0);
 			if(heading > threshold)
@@ -148,7 +148,6 @@ void move(int power, int enc, int time = 5000, float threshold = 1.0)
 
 void adjustLiftDown(int time)
 {
-	servo[latchServo] = 64;
 	clearTimer(T1);
 	while(time1[T1] < time)
 	{
@@ -161,7 +160,6 @@ void adjustLiftDown(int time)
 
 void adjustLiftUp(int time)
 {
-	servo[latchServo] = 64;
 	clearTimer(T1);
 	while(time1[T1] < time)
 	{
@@ -172,15 +170,25 @@ void adjustLiftUp(int time)
 	motor[motorLift2] = 0;
 }
 
+void initialize()
+{
+  servo[pivotServo] = 255;
+	servo[grabberRight] = 140;
+	servo[grabberLeft] = 120;
+	servo[latchServo] = 64;
+	nMotorEncoder[motorLift2] = 0;
+	adjustLiftUp(200);
+	wait1Msec(200);
+}
+
 void autonomousLift(int deg, int time = 5000)
 {
-	deg = deg / 2;
-	nMotorEncoder[motorLift] = 0;
+	nMotorEncoder[motorLift2] = 0;
 	wait1Msec(50);
 	clearTimer(T1);
 	servo[pivotServo] = 255;
 	servo[latchServo] = 64;
-	while((nMotorEncoder[motorLift] > -deg) && time1[T1] < time)
+	while((nMotorEncoder[motorLift2] > -deg) && time1[T1] < time)
 	{
 		motor[motorLift] = -100;
 		motor[motorLift2] = -100;
@@ -188,16 +196,26 @@ void autonomousLift(int deg, int time = 5000)
 	motor[motorLift] = 0;
 	motor[motorLift2] = 0;
 	servo[pivotServo] = 44;
-	wait1Msec(1000);
+	wait1Msec(500);
 	adjustLiftDown(200);
-	wait1Msec(1000);
+	wait1Msec(500);
 	servo[latchServo] = 126;
-	wait1Msec(1000);
+	wait1Msec(500);
 	adjustLiftUp(700);
-	wait1Msec(1000);
+	wait1Msec(500);
 	servo[pivotServo] = 255;
+	wait1Msec(500);
 	servo[latchServo] = 64;
+	clearTimer(T1);
+	while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)
+	{
+		motor[motorLift] = 100;
+		motor[motorLift2] = 100;
+	}
+	motor[motorLift] = 0;
+	motor[motorLift2] = 0;
 }
+
 void grabber(bool grab)
 {
 	if(grab)
@@ -214,18 +232,13 @@ void grabber(bool grab)
 	}
 }
 
-void centerGoal()
+void centerGoal(int power, int angle)
 {
-	servo[latchServo] = 64;
-	wait1Msec(1500);
-	rotTurn(80, 180);
-	wait1Msec(1500);
-	nMotorEncoder[motorLift] = 0;
-	wait1Msec(100);
+	rotTurn(power, angle);
+	wait1Msec(500);
+	nMotorEncoder[motorLift2] = 0;
 	clearTimer(T1);
-	servo[pivotServo] = 255;
-	servo[latchServo] = 64;
-	while((nMotorEncoder[motorLift] > -6800) && time1[T1] < 3000)
+	while((nMotorEncoder[motorLift2] > -6800) && time1[T1] < 3000)
 	{
 		motor[motorLift] = -100;
 		motor[motorLift2] = -100;
@@ -233,25 +246,22 @@ void centerGoal()
 	motor[motorLift] = 0;
 	motor[motorLift2] = 0;
 	servo[pivotServo] = 24;
-	rotTurn(80, -8);
-	move(-20, -50, 1000);
-	wait1Msec(1500);
+	move(-50, -100, 1000);
+	wait1Msec(500);
 	servo[latchServo] = 126;
-	wait1Msec(1500);
-	rotTurn(80, 8);
-	move(20, 200, 1000);
-	wait1Msec(1500);
+	wait1Msec(500);
+	move(50, 100, 1000);
+	wait1Msec(500);
 	servo[pivotServo] = 255;
+	wait1Msec(500);
 	servo[latchServo] = 64;
+	wait1Msec(500);
 	clearTimer(T1);
-	while((nMotorEncoder[motorLift] < -1000) && time1[T1] < 3000)
+	while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)
 	{
 		motor[motorLift] = 100;
 		motor[motorLift2] = 100;
 	}
 	motor[motorLift] = 0;
 	motor[motorLift2] = 0;
-	wait1Msec(100);
-	rotTurn(80, -180);
-	wait1Msec(500);
 }

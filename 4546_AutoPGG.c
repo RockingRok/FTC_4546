@@ -20,73 +20,51 @@
 #pragma config(Servo,  srvo_S4_C1_6,    grabberLeft,          tServoStandard)
 #include "library.h"
 #include "JoystickDriver.c"
-
-void initializeRobot()
-{
-  servo[pivotServo] = 255;
-	servo[grabberRight] = 140;
-	servo[grabberLeft] = 120;
-	servo[latchServo] = 64;
-	nMotorEncoder[motorLift] = 0;
-	wait1Msec(200);
-	return;
-}
 task main()
 {
-	initializeRobot();
-	while(true){
-		if(nNxtButtonPressed == 2){
-			motor[motorFL] = 50;
-			motor[motorBL] = 50;
-			motor[motorFR] = 50;
-			motor[motorBR] = 50;
-			wait10Msec(50);
-			while (!(nNxtButtonPressed == 2)){}
-			stopMotors();
-			wait10Msec(50);
-		}
-		if(nNxtButtonPressed == 3){
-			motor[motorFlipper] = -50;
-			wait10Msec(50);
-			while (!(nNxtButtonPressed == 3)){}
-			motor[motorFlipper] = 0;
-			wait10Msec(50);
-		}
-		if(nNxtButtonPressed == 1){
-			//this code should put the lift at or near its max height and then flip the bucket out.
-			wait1Msec(1000);
-			servo[latchServo] = 64;
-			wait1Msec(1500);
-			nMotorEncoder[motorLift2] = 0;
-			wait1Msec(100);
-			clearTimer(T1);
-			servo[pivotServo] = 255;
-			servo[latchServo] = 64;
-			while((nMotorEncoder[motorLift2] > -4800) && time1[T1] < 3000)
-			{
-				motor[motorLift] = -100;
-				motor[motorLift2] = -100;
-			}
-			motor[motorLift] = 0;
-			motor[motorLift2] = 0;
-			while(!(nNxtButtonPressed == 1)){}
-			servo[pivotServo] = 24;
-			wait1Msec(1000);
-			servo[latchServo] = 126;
-			wait1Msec(1000);
-			servo[pivotServo] = 255;
-			servo[latchServo] = 64;
-			wait1Msec(1000);
-			while(!(nNxtButtonPressed == 1)){}
-			wait1Msec(1000);
-			clearTimer(T1);
-			while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)
-			{
-				motor[motorLift] = 100;
-				motor[motorLift2] = 100;
-			}
-			motor[motorLift] = 0;
-			motor[motorLift2] = 0;
-		}
-	}
+	waitForStart();
+	initialize();
+	//move slightly forward
+	move(-50, -1000, 2000);
+	//turn right 45 degrees
+	rotTurn(80, 45);
+	//align with the second to right column
+	move(-50, -1000, 2000);
+	//turn staright, facing the small goal
+	rotTurn(80, -45);
+	//drive to the square before the small goal
+	move(-50, -2000, 5000);
+	//turn to face the large goal
+	rotTurn(80, 45);
+	//move up to the large goal
+	move(-50, -1000, 2000);
+	//grab the goal
+	grabber(true);
+	//drop the large ball in the large goal
+	autonomousLift(5000);
+	//move back to the square in front of the small goal
+	move(50, 1000, 2000);
+	//turn to face the small goal
+	rotTurn(80, 135);
+	//release the large goal, now behind the robot opposite the small goal
+	grabber(false);
+
+	//drop the small ball in the small goal
+	//insert method to flip out the servo holding the small ball here
+
+
+	//turn around, move back, and grab the small goal
+	rotTurn(80, 180);
+	move(-50, -1000, 5000);
+	grabber(true);
+
+	//TO DO: add code to push the goal back
+
+
+	/*move(-50, -1000, 5000);
+	rotTurn(80, -135);
+	move(50, 1000, 2000);
+	rotTurn(80, -45);
+	move(50, 1000, 2000);
+	autonomousLift(2500);*/
 }

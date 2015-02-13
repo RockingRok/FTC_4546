@@ -20,73 +20,35 @@
 #pragma config(Servo,  srvo_S4_C1_6,    grabberLeft,          tServoStandard)
 #include "library.h"
 #include "JoystickDriver.c"
-
-void initializeRobot()
-{
-  servo[pivotServo] = 255;
-	servo[grabberRight] = 140;
-	servo[grabberLeft] = 120;
-	servo[latchServo] = 64;
-	nMotorEncoder[motorLift] = 0;
-	wait1Msec(200);
-	return;
-}
 task main()
 {
-	initializeRobot();
-	while(true){
-		if(nNxtButtonPressed == 2){
-			motor[motorFL] = 50;
-			motor[motorBL] = 50;
-			motor[motorFR] = 50;
-			motor[motorBR] = 50;
-			wait10Msec(50);
-			while (!(nNxtButtonPressed == 2)){}
-			stopMotors();
-			wait10Msec(50);
-		}
-		if(nNxtButtonPressed == 3){
-			motor[motorFlipper] = -50;
-			wait10Msec(50);
-			while (!(nNxtButtonPressed == 3)){}
-			motor[motorFlipper] = 0;
-			wait10Msec(50);
-		}
-		if(nNxtButtonPressed == 1){
-			//this code should put the lift at or near its max height and then flip the bucket out.
-			wait1Msec(1000);
-			servo[latchServo] = 64;
-			wait1Msec(1500);
-			nMotorEncoder[motorLift2] = 0;
-			wait1Msec(100);
-			clearTimer(T1);
-			servo[pivotServo] = 255;
-			servo[latchServo] = 64;
-			while((nMotorEncoder[motorLift2] > -4800) && time1[T1] < 3000)
-			{
-				motor[motorLift] = -100;
-				motor[motorLift2] = -100;
-			}
-			motor[motorLift] = 0;
-			motor[motorLift2] = 0;
-			while(!(nNxtButtonPressed == 1)){}
-			servo[pivotServo] = 24;
-			wait1Msec(1000);
-			servo[latchServo] = 126;
-			wait1Msec(1000);
-			servo[pivotServo] = 255;
-			servo[latchServo] = 64;
-			wait1Msec(1000);
-			while(!(nNxtButtonPressed == 1)){}
-			wait1Msec(1000);
-			clearTimer(T1);
-			while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)
-			{
-				motor[motorLift] = 100;
-				motor[motorLift2] = 100;
-			}
-			motor[motorLift] = 0;
-			motor[motorLift2] = 0;
-		}
-	}
+	waitForStart();
+	initialize();
+	//move off ramp all the way to the medium goal
+	move(-50, -9999, 2700);
+	//grab it
+	grabber(true);
+	//turn to the left
+	rotTurn(80, -90);
+	//move slightly back
+	move(-50, -500, 2000);
+	//drop the ball
+	autonomousLift(3500);
+	//turn to the correct angle to push the goal
+	rotTurn(80, -45);
+	//release the goal
+	grabber(false);
+	//turn to face the small goal
+	rotTurn(80, 90); //value used to be 135
+	//approach the small goal
+	move(50, 700, 2000);
+	//small ball arm here
+	//turn 180 and grab the goal
+	//rotTurn(80, 180); dont need this since the grabbers are already facing the small goal
+	grabber(true);
+	//move to the parking zone, one goal in tow and one being pushed
+	rotTurn(80, 45); //value used to be 225
+	move(-50, -5000, 5000);
+	//rotTurn(80, 45);
+	//move(50, 2000, 3000);
 }

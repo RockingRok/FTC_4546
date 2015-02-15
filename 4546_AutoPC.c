@@ -44,10 +44,10 @@ task main()
 		move(-50, -200, 1000);
 		rotTurn(100, -45); //-39
 		wait1Msec(2000);
-		move(50, 1200, 3000);
-		rotTurn(100, -90); //-83
-		move(50, 100, 1000);
-		centerGoal(100, 0);
+		move(50, 1100, 3000); //1200
+		//rotTurn(100, -90); //-83
+		//move(50, 100, 1000);
+		centerGoal(100, -90);
 		//while(time1[T2] < 25000){}
 		rotTurn(80, 90);
 		move(-50, -700, 1500);
@@ -57,7 +57,7 @@ task main()
 	else if(getPositionPark() == 3)
 	{
 		rotTurn(100, -45);
-		move(50, 2000, 3000);
+		move(50, 1836, 3000); //2000
 		centerGoal(100, -45);
 		//while(time1[T2] < 25000){}
 		rotTurn(80, 90);

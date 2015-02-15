@@ -25,15 +25,15 @@ task main()
 	waitForStart();
 	initialize();
 	move(-50, -1195, 2000); //-1000
-	rotTurn(80, 45);
+	rotTurn(100, 45);
 	move(-50, -1471, 2000); //-1000
-	rotTurn(80, -45);
+	rotTurn(100, -45);
 	move(-50, -3120, 5000); //-2500
 	grabber(true);
 	move(50, 3120, 5000);
-	rotTurn(80, -135);
+	rotTurn(100, -135);
 	move(50, 1471, 2000);
-	rotTurn(80, -45);
+	rotTurn(100, -45);
 	move(50, 1195, 2000);
 	autonomousLift(2500);
 }

@@ -34,9 +34,9 @@ task main()
 	{
 		centerGoal(100, 180); //183
 		//while(time1[T2] < 25000){}
-		rotTurn(80, 90);
+		rotTurn(100, 90);
 		move(-50, -700, 1500);
-		rotTurn(80, -90);
+		rotTurn(100, -90);
 		move(-60, -2000, 3000);
 	}
 	else if(getPositionPark() == 2)
@@ -49,9 +49,9 @@ task main()
 		//move(50, 100, 1000);
 		centerGoal(100, -90);
 		//while(time1[T2] < 25000){}
-		rotTurn(80, 90);
+		rotTurn(100, 90);
 		move(-50, -700, 1500);
-		rotTurn(80, -90);
+		rotTurn(100, -90);
 		move(-60, -2000, 3000);
 	}
 	else if(getPositionPark() == 3)
@@ -60,9 +60,9 @@ task main()
 		move(50, 1836, 3000); //2000
 		centerGoal(100, -45);
 		//while(time1[T2] < 25000){}
-		rotTurn(80, 90);
+		rotTurn(100, 90);
 		move(-50, -700, 1500);
-		rotTurn(80, -90);
+		rotTurn(100, -90);
 		move(-60, -2000, 3000);
 	}
 }

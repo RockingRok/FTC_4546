@@ -34,11 +34,14 @@ task main()
 	//	motor[motorFL] = 100;
 	//	irval = nMotorEncoder[motorFL];
 	//}
-	irval = nMotorEncoder[motorLift2];
-	while(true)
-	{
-		motor[motorLift2] = -100;
-		motor[motorLift] = -100;
-		irval = nMotorEncoder[motorLift2];
-	}
+	//irval = nMotorEncoder[motorLift2];
+	//while(true)
+	//{
+	////	motor[motorLift2] = -100;
+	////	motor[motorLift] = -100;
+	//irval = HTIRS2readACDir(irSensor);
+grabber(true);
+wait1Msec(1000);
+grabber(false);
+wait1Msec(1000);
 }

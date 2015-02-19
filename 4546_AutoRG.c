@@ -24,12 +24,14 @@ task main()
 {
 	waitForStart();
 	initialize();
-	move(-50, -9999, 2700);
-	move(-30, -500, 3000);
+	grabber(false);
+	move(-50, -9999, 1900, .5);
+	move(-20, -500, 3000, .5);
 	grabber(true);
-	rotTurn(100, -140);
-	move(-50, -4500, 5000);
-	rotTurn(100, -40);
-	move(-35, -1000, 3000);
+	//rotTurn(100, 25);
+	//move(50, 500, 1000);
+	//rotTurn(100, 20);
+	//move(80, 5500, 5000, .5);
+	//rotTurn(100, -30);
 	autonomousLift(3500);
 }

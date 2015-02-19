@@ -195,8 +195,8 @@ void autonomousLift(int deg, int time = 5000)
 	}
 	motor[motorLift] = 0;
 	motor[motorLift2] = 0;
-	servo[pivotServo] = 44;
-	wait1Msec(500);
+	servo[pivotServo] = 0;
+	wait1Msec(2000);
 	adjustLiftDown(200);
 	wait1Msec(500);
 	servo[latchServo] = 126;
@@ -220,14 +220,14 @@ void grabber(bool grab)
 {
 	if(grab)
 	{
-		servo[grabberRight] = 245;
-		servo[grabberLeft] = 10;
+		servo[grabberRight] = 125;
+		servo[grabberLeft] = 145;
 		wait1Msec(50);
 	}
 	else
 	{
-		servo[grabberRight] = 140;
-		servo[grabberLeft] = 120;
+		servo[grabberRight] = 245;
+		servo[grabberLeft] = 10;
 		wait1Msec(50);
 	}
 }
@@ -238,26 +238,27 @@ void centerGoal(int power, int angle)
 	wait1Msec(500);
 	nMotorEncoder[motorLift2] = 0;
 	clearTimer(T1);
-	while((nMotorEncoder[motorLift2] > -6800) && time1[T1] < 3000)
+	while((nMotorEncoder[motorLift2] > -6800) && time1[T1] < 5000)
 	{
 		motor[motorLift] = -100;
 		motor[motorLift2] = -100;
 	}
 	motor[motorLift] = 0;
 	motor[motorLift2] = 0;
-	servo[pivotServo] = 24;
-	move(-50, -100, 1000);
-	wait1Msec(500);
+	servo[pivotServo] = 0;
+	wait1Msec(2000);
+	move(-50, -150, 1000);
+	wait1Msec(1000);
 	servo[latchServo] = 126;
-	wait1Msec(500);
-	move(50, 100, 1000);
-	wait1Msec(500);
+	wait1Msec(1000);
+	move(50, 200, 1000);
+	wait1Msec(1000);
 	servo[pivotServo] = 255;
 	wait1Msec(500);
 	servo[latchServo] = 64;
 	wait1Msec(500);
 	clearTimer(T1);
-	while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)
+	while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 5000)
 	{
 		motor[motorLift] = 100;
 		motor[motorLift2] = 100;

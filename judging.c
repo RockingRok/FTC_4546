@@ -7,7 +7,7 @@
 #pragma config(Motor,  mtr_S1_C1_1,     motorFR,       tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C1_2,     motorLift2,    tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C2_1,     motorFL,       tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C2_2,     motorFlipper,  tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     motorFlipper,  tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_1,     motorBR,       tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C3_2,     motorLift,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C4_1,     motorBL,       tmotorTetrix, openLoop)
@@ -27,12 +27,13 @@ void initializeRobot()
 	servo[grabberRight] = 140;
 	servo[grabberLeft] = 120;
 	servo[latchServo] = 64;
-	nMotorEncoder[motorLift] = 0;
+	nMotorEncoder[motorLift2] = 0;
 	wait1Msec(200);
 	return;
 }
 task main()
 {
+	waitForStart();
 	initializeRobot();
 	while(true){
 		if(nNxtButtonPressed == 2){
@@ -54,9 +55,9 @@ task main()
 		}
 		if(nNxtButtonPressed == 1){
 			//this code should put the lift at or near its max height and then flip the bucket out.
-			wait1Msec(1000);
+			wait1Msec(300);
 			servo[latchServo] = 64;
-			wait1Msec(1500);
+			wait1Msec(100);
 			nMotorEncoder[motorLift2] = 0;
 			wait1Msec(100);
 			clearTimer(T1);
@@ -70,14 +71,13 @@ task main()
 			motor[motorLift] = 0;
 			motor[motorLift2] = 0;
 			while(!(nNxtButtonPressed == 1)){}
-			servo[pivotServo] = 24;
+			servo[pivotServo] = 0;
 			wait1Msec(1000);
 			servo[latchServo] = 126;
 			wait1Msec(1000);
-			servo[pivotServo] = 255;
-			servo[latchServo] = 64;
-			wait1Msec(1000);
 			while(!(nNxtButtonPressed == 1)){}
+			servo[latchServo] = 64;
+			servo[pivotServo] = 255;
 			wait1Msec(1000);
 			clearTimer(T1);
 			while((nMotorEncoder[motorLift2] < -1000) && time1[T1] < 3000)

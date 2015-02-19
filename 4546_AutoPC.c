@@ -28,38 +28,38 @@ task main()
 	clearTimer(T2);
 	initialize();
 	//come up to the last intersection before the center goal
-	move(40, 1350, 3000);
-	wait1Msec(1000);
+	move(32, 1380, 3000, .3);
+	wait1Msec(1500);
 	if(getPositionPark() == 1)
 	{
-		centerGoal(100, 203); //183
+		centerGoal(100, 199); //183
 		//while(time1[T2] < 25000){}
 		rotTurn(100, 90);
-		move(-50, -600, 1500);
+		move(-50, -600, 1500, .5);
 		rotTurn(100, -90);
-		move(-60, -2000, 3000);
+		move(-60, -2000, 3000, .5);
 	}
 	else if(getPositionPark() == 2)
 	{
-		move(-30, -500, 1000);
+		move(-30, -500, 1000, .5);
 		rotTurn(100, -45);
-		move(30, 1670, 3000);
-		centerGoal(100, -90);
-		//while(time1[T2] < 25000){}
+		move(30, 1710, 3000, .5);
+		centerGoal(100, -95);
+		while(time1[T2] < 25000){}
 		rotTurn(100, 90);
-		move(-50, -550, 1500);
+		move(-50, -650, 1500, .5);
 		rotTurn(100, -90);
-		move(-60, -2000, 3000);
+		move(-60, -2000, 3000, .5);
 	}
 	else if(getPositionPark() == 3)
 	{
 		rotTurn(100, -40);
-		move(30, 2400, 3000); //2000
-		centerGoal(100, -45);
-		//while(time1[T2] < 25000){}
+		move(30, 2480, 3000, .5); //2000
+		centerGoal(100, -47);
+		while(time1[T2] < 25000){}
 		rotTurn(100, 90);
-		move(-50, -700, 1500);
+		move(-50, -700, 1500, .5);
 		rotTurn(100, -90);
-		move(-60, -2000, 3000);
+		move(-60, -2000, 3000, .5);
 	}
 }

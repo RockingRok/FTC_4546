@@ -23,7 +23,6 @@ task baseDriver()
 	float gyro = 0.0;
 	while(true)
 	{
-		getJoystickSettings(joystick);
 		//IF HALF SPEED MODE ISNT ON, GO NORMAL
 		if(!(joy1Btn(5) == 1))
 		{
@@ -188,7 +187,7 @@ task servos()
 			servo[grabberLeft] = 125;
 		}
 		//TRUE GRABBERS, Y
-		else if(joy1Btn(4) == 1)
+		if(joy1Btn(4) == 1)
 		{
 			servo[grabberRight] = 245;
 			servo[grabberLeft] = 10;
@@ -200,6 +199,7 @@ task lift()
 {
 	while(true)
 	{
+		getJoystickSettings(joystick);
 		//RT, MAKE LIFT GO DOWN
 		if(joy2Btn(8) == 1)
 		{
@@ -260,9 +260,9 @@ task main()
 {
 	waitForStart();
 	initializeRobot();
-	startTask(baseDriver);
-	startTask(servos);
 	startTask(lift);
+	startTask(baseDriver);
 	startTask(flippers);
+	startTask(servos);
 	while(true){}
 }
